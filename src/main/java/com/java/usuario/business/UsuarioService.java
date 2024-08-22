@@ -1,9 +1,11 @@
 package com.java.usuario.business;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.java.usuario.business.dto.UsuarioDTO;
 import com.java.usuario.infrastructure.entity.Usuario;
+import com.java.usuario.infrastructure.exceptions.*;
 import com.java.usuario.infrastructure.repository.UsuarioRepository;
 import com.java.usuario.business.converter.UsuarioConverter;
 
@@ -15,11 +17,49 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConveter;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioDTO salvUsuario(UsuarioDTO usuarioDTO) {
+    public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) {
+        emailExiste(usuarioDTO.getEmail());
+        usuarioDTO.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
         Usuario usuario = usuarioConveter.paraUsuario(usuarioDTO);
 
         return usuarioConveter.paraUsuarioDTO(usuarioRepository.save(usuario));
     }
+
+    public void emailExiste(String email) {
+        try {
+            boolean existe = verificaEmailExistente(email);
+            if (existe) {
+                throw new ConflictException("Email já cadastrado " + email);
+            }
+        } catch (ConflictException e) {
+            throw new ConflictException("Email já cadastrado ", e.getCause());
+        }
+    }
+
+    public boolean verificaEmailExistente(String email) {
+
+        return usuarioRepository.existsByEmail(email);
+    }
+
+    public UsuarioDTO buscarUsuarioPorEmail(String email) {
+        try {
+            return usuarioConveter.paraUsuarioDTO(
+                    usuarioRepository.findByEmail(email)
+                            .orElseThrow(
+                    () -> new ResourceNotFoundException("Email não encontrado " + email)
+                            )
+            );
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Email não encontrado " + email);
+        }
+    }
+
+    public void deletaUsuarioPorEmail(String email){
+
+        usuarioRepository.deleteByEmail(email);
+    }
+
 
 }
