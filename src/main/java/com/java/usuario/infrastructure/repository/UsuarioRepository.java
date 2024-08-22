@@ -12,7 +12,7 @@ import com.java.usuario.infrastructure.entity.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    boolean existByEmail(String email);
+    boolean existsByEmail(String email);
 
     Optional<Usuario> findByEmail(String email);
 
