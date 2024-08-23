@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.java.usuario.business.UsuarioService;
+import com.java.usuario.business.dto.EnderecoDTO;
+import com.java.usuario.business.dto.TelefoneDTO;
 import com.java.usuario.business.dto.UsuarioDTO;
 import com.java.usuario.infrastructure.security.JwtUtil;
 
@@ -56,8 +58,23 @@ public class UsuarioController {
     }
 
     @PutMapping
-    public ResponseEntity<UsuarioDTO> atualizaDadoUsuario(@RequestBody UsuarioDTO dto, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<UsuarioDTO> atualizaDadoUsuario(@RequestBody UsuarioDTO dto,
+                                                        @RequestHeader("Authorization") String token) {
 
         return ResponseEntity.ok(usuarioService.atualiarDadosUsuario(token, dto));
+    }
+
+    @PutMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> atualizaEndereco(@RequestBody EnderecoDTO dto,
+                                                        @RequestParam("id") Long id) {
+
+        return ResponseEntity.ok(usuarioService.atualizaEndereco(id, dto));
+    }
+
+    @PutMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> atualizaTelefone(@RequestBody TelefoneDTO dto,
+                                                        @RequestParam("id") Long id) {
+
+        return ResponseEntity.ok(usuarioService.atualizaTelefone(id, dto));
     }
 }
