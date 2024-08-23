@@ -40,7 +40,6 @@ public class JwtUtil {
                 .getPayload(); // Obtém o payload (corpo) do token, que contém as claims
     }
 
-
     // Extrai o email do usuário do token JWT
     public String extrairEmailToken(String token) {
         // Obtém o assunto (nome de usuário) das claims do token
